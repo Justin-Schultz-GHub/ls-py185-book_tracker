@@ -1,0 +1,2 @@
+class SessionPersistence:
+    pass
