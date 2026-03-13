@@ -17,3 +17,17 @@ PRIMARY KEY (book_id, genre_id)
 
 CREATE INDEX idx_books_genres_genre_id
 ON books_genres (genre_id);
+
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+username VARCHAR(20) UNIQUE,
+password_hash TEXT NOT NULL
+);
+
+CREATE TABLE users_books (
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+book_id INTEGER REFERENCES books(id) ON DELETE CASCADE,
+status TEXT NOT NULL CHECK (status in ('Completed', 'Reading', 'Plan to Read', 'Dropped')),
+score TEXT
+);
