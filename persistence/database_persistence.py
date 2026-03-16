@@ -32,7 +32,7 @@ class DatabasePersistence:
                             ''')
 
                 cursor.execute('''
-                                CREATE TABLE IF NOT EXISTS books_genres
+                                CREATE TABLE IF NOT EXISTS books_genres (
                                 book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
                                 genre_id INTEGER NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
                                 PRIMARY KEY (book_id, genre_id)
@@ -86,7 +86,7 @@ class DatabasePersistence:
 
         return result is not None
 
-    def create_new_user(self, username, password):
+    def create_new_user(self, username, hashed_password):
         query = '''
                 INSERT INTO users (username, password_hash)
                 values (%s, %s)
@@ -95,7 +95,7 @@ class DatabasePersistence:
 
         with self._database_connect() as connection:
             with connection.cursor(cursor_factory=DictCursor) as cursor:
-                cursor.execute(query, (username, password,))
+                cursor.execute(query, (username, hashed_password,))
 
     def get_user_id(self, username):
         query = '''
@@ -110,3 +110,17 @@ class DatabasePersistence:
                 result = cursor.fetchone()
 
         return result['id'] if result else None
+
+    def get_user_by_username(self, username):
+        query = '''
+                SELECT * FROM users
+                WHERE username = (%s);
+                '''
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, (username,))
+                result = cursor.fetchone()
+
+        return result

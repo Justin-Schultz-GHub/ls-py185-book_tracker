@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en-US"
     <head>
-        <title>Justin's Book Tracker App</title>
+        <a href="{{ url_for('index') }}">Justin's Book Tracker App</a>
+        <a href="{{ url_for('logout') }}">Log out</a>
     </head>
     <body>
-        <header>Justin's Book Tracker App</header>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}

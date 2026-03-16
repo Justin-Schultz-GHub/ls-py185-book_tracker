@@ -21,19 +21,20 @@ from persistence.session_persistence import (
                                             )
 
 app = Flask(__name__)
-app.config['DATABASE'] = 'flashcards'
+app.config['DATABASE'] = 'book_tracker'
 app.secret_key=secrets.token_hex(32)
 
 @app.before_request
 def initialize_persistence():
     dbname = app.config.get('DATABASE', os.environ.get('DATABASE', 'book_tracker'))
     g.storage = DatabasePersistence(dbname=dbname)
+    g.session = SessionPersistence(session)
 
 # Route Hooks
 @app.route('/')
 def index():
     if "user_id" in session:
-        return redirect(url_for('books'))
+        return redirect(url_for('home'))
 
     return render_template('index.html')
 
@@ -57,14 +58,45 @@ def signup():
         session['user_id'] = user_id
         flash('Account created successfully', 'success')
 
-        return redirect(url_for('books'))
-
+        return redirect(url_for('home'))
 
     return render_template('signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = g.storage.get_user_by_username(username)
+
+        if user and check_password_hash(user['password_hash'], password):
+            g.session.login(user['id'])
+            flash('Successfully logged in', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid username and password combination', 'error')
+            return render_template('login.html', username=username)
+
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    g.session.logout()
+
+    return render_template('index.html')
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 @app.route('/books')
 def books():
     return render_template('books.html')
+
+@app.route('/book_list')
+def book_list():
+    return render_template('book_list.html')
 
 
 if __name__ == "__main__":
