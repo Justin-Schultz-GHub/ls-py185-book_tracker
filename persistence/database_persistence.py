@@ -124,3 +124,21 @@ class DatabasePersistence:
                 result = cursor.fetchone()
 
         return result
+
+    def get_all_books(self):
+        query = '''
+                SELECT b.id, b.title, array_agg(g.name) AS genres
+                FROM books b
+                JOIN books_genres bg ON b.id = bg.book_id
+                JOIN genres g ON bg.genre_id = g.id
+                GROUP BY b.id, b.title
+                ORDER BY b.title;
+                '''
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query)
+                result = cursor.fetchall()
+
+        return result

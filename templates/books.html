@@ -2,5 +2,24 @@
 
 {% block content %}
     <h2>BOOKS</h2>
+        <div class="container mt-4">
+            <div class="row">
+                {% for book in books %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ book.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Genres:</h6>
+                                <ul>
+                                    {% for genre in book.genres %}
+                                        <li>{{ genre }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
 
 {% endblock %}
