@@ -20,7 +20,8 @@ class DatabasePersistence:
                                 CREATE TABLE IF NOT EXISTS books (
                                 id SERIAL PRIMARY KEY,
                                 title TEXT UNIQUE NOT NULL,
-                                author TEXT
+                                author TEXT NOT NULL,
+                                synopsis TEXT
                                 );
                             ''')
 
@@ -140,5 +141,19 @@ class DatabasePersistence:
             with connection.cursor(cursor_factory=DictCursor) as cursor:
                 cursor.execute(query)
                 result = cursor.fetchall()
+
+        return result
+
+    def get_book_by_id(self, book_id):
+        query = '''
+                SELECT * FROM books
+                WHERE id = (%s);
+                '''
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, (book_id,))
+                result = cursor.fetchone()
 
         return result

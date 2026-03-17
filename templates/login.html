@@ -1,13 +1,21 @@
 {% extends 'layout.html' %}
 
+{% block page_title %}Log In{% endblock %}
+
 {% block content %}
-    <h2>Log in</h2>
-    <form method='POST' action="{{ url_for('login') }}">
-        Username: <input type="text" name="username" value="{{ username or '' }}"/>
-        Password: <input type="password" name="password" value=""/>
-        <div>
-            <input type="submit" value="Submit"/>
+<div class="card p-4 shadow-sm mx-auto" style="max-width: 400px;">
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" value="{{ username or '' }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Log In</button>
         </div>
     </form>
-
+</div>
 {% endblock %}

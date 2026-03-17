@@ -93,7 +93,14 @@ def home():
 @app.route('/books')
 def books():
     books = g.storage.get_all_books()
+    print(type(books))
     return render_template('books.html', books=books)
+
+@app.route('/book/<int:book_id>')
+def book(book_id):
+    book = g.storage.get_book_by_id(book_id)
+
+    return render_template('book.html', book=book)
 
 @app.route('/book_list')
 def book_list():

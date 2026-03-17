@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <a href="{{ url_for('login') }}">Log in</a>
-    <a href="{{ url_for('signup') }}">Sign up</a>
+<div class="d-flex gap-3 justify-content-center mt-5">
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Log in</a>
+    <a href="{{ url_for('signup') }}" class="btn btn-success btn-lg">Sign up</a>
+</div>
 {% endblock %}
