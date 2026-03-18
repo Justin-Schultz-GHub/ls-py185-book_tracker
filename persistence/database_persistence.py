@@ -157,3 +157,49 @@ class DatabasePersistence:
                 result = cursor.fetchone()
 
         return result
+
+    def user_book_status(self, user_id, book_id):
+        query = '''
+                SELECT status, score FROM users_books
+                WHERE user_id = (%s) and book_id = (%s);
+                '''
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, (user_id, book_id,))
+                return cursor.fetchone()
+
+    def add_to_book_list(self, user_id, book_id, status, score):
+        query = '''
+                SELECT 1 FROM users_books
+                WHERE user_id = (%s) and book_id = (%s);
+                '''
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, (user_id, book_id,))
+                exists = cursor.fetchone()
+
+        if exists:
+            query = '''
+                    UPDATE users_books
+                    SET status = %s, score = %s
+                    WHERE user_id = %s AND book_id = %s;
+                    '''
+            logger.info('Executing query: %s', query)
+
+            with self._database_connect() as connection:
+                with connection.cursor(cursor_factory=DictCursor) as cursor:
+                    cursor.execute(query, (status, score, user_id, book_id,))
+        else:
+            query = '''
+                    INSERT INTO users_books (user_id, book_id, status, score)
+                    values (%s, %s, %s, %s);
+                    '''
+            logger.info('Executing query: %s', query)
+
+            with self._database_connect() as connection:
+                with connection.cursor(cursor_factory=DictCursor) as cursor:
+                    cursor.execute(query, (user_id, book_id, status, score,))

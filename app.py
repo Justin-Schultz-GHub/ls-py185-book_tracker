@@ -99,13 +99,25 @@ def books():
 @app.route('/book/<int:book_id>')
 def book(book_id):
     book = g.storage.get_book_by_id(book_id)
+    user_book = None
 
-    return render_template('book.html', book=book)
+    if session.get('user_id'):
+        user_book = g.storage.user_book_status(session['user_id'], book_id)
+
+    return render_template('book.html', book=book, user_book=user_book)
 
 @app.route('/book_list')
 def book_list():
     return render_template('book_list.html')
 
+@app.route('/add_to_book_list/<int:book_id>', methods=['GET', 'POST'])
+def add_to_book_list(book_id):
+    status = request.form['status']
+    score = str(request.form['score'])
+
+    g.storage.add_to_book_list(session['user_id'], book_id, status, score)
+
+    return redirect(url_for('book', book_id=book_id))
 
 if __name__ == "__main__":
     if os.environ.get('FLASK_ENV') == 'production':

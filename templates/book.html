@@ -1,7 +1,47 @@
 {% extends 'layout.html' %}
 
 {% block page_title %}{{ book.title }}{% endblock %}
+
 {% block content %}
-    <h3>Synopsis</h3>
-    <div>{{ book.synopsis }}</div>
+<div class="card shadow-sm p-4 mb-4" style="max-width: 700px; margin: auto;">
+    <h3 class="card-title mb-3">Synopsis</h3>
+    <p class="card-text">{{ book.synopsis }}</p>
+</div>
+
+{% if session.user_id %}
+<form method="POST" action="{{ url_for('add_to_book_list', book_id=book.id) }}" class="mb-3">
+    <div class="mb-2" style="width: 200px;">
+        <label for="status" class="form-label">Status</label>
+        <select name="status" id="status" class="form-select">
+            <option value="Reading" {% if user_book and user_book.status == 'Reading' %}selected{% endif %}>Reading</option>
+            <option value="Plan to Read" {% if user_book and user_book.status == 'Plan to Read' %}selected{% endif %}>Plan to Read</option>
+            <option value="Completed" {% if user_book and user_book.status == 'Completed' %}selected{% endif %}>Completed</option>
+            <option value="Dropped" {% if user_book and user_book.status == 'Dropped' %}selected{% endif %}>Dropped</option>
+        </select>
+    </div>
+
+    <div class="mb-2" style="width: 200px;">
+        <label for="score" class="form-label">Score</label>
+        <select name="score" id="score" class="form-select">
+            <option value="10" {% if user_book and user_book.score|int == 10 %}selected{% endif %}>10 - Masterpiece</option>
+            <option value="9" {% if user_book and user_book.score|int == 9 %}selected{% endif %}>9 - Great</option>
+            <option value="8" {% if user_book and user_book.score|int == 8 %}selected{% endif %}>8 - Very Good</option>
+            <option value="7" {% if user_book and user_book.score|int == 7 %}selected{% endif %}>7 - Good</option>
+            <option value="6" {% if user_book and user_book.score|int == 6 %}selected{% endif %}>6 - Fine</option>
+            <option value="5" {% if user_book and user_book.score|int == 5 %}selected{% endif %}>5 - Average</option>
+            <option value="4" {% if user_book and user_book.score|int == 4 %}selected{% endif %}>4 - Bad</option>
+            <option value="3" {% if user_book and user_book.score|int == 3 %}selected{% endif %}>3 - Very Bad</option>
+            <option value="2" {% if user_book and user_book.score|int == 2 %}selected{% endif %}>2 - Horrible</option>
+            <option value="1" {% if user_book and user_book.score|int == 1 %}selected{% endif %}>1 - Appalling</option>
+        </select>
+    </div>
+
+
+    {% if user_book.status %}
+        <button type="submit" class="btn btn-warning">Update</button>
+    {% else %}
+        <button type="submit" class="btn btn-success">Add to List</button>
+    {% endif %}
+</form>
+{% endif %}
 {% endblock %}
