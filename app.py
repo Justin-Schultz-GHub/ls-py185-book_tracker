@@ -93,7 +93,6 @@ def home():
 @app.route('/books', methods=['GET'])
 def books():
     search_query = request.args.get('q', '').strip()
-    print(search_query)
     books = g.storage.get_books(search_query)
     return render_template('books.html', books=books)
 
