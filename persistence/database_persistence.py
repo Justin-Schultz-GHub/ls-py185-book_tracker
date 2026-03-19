@@ -202,3 +202,14 @@ class DatabasePersistence:
                 result = cursor.fetchall()
 
         return result
+
+    def remove_from_book_list(self, user_id, book_id):
+        query = '''
+                DELETE FROM users_books
+                WHERE user_id = (%s) and book_id = (%s);
+                '''
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, (user_id, book_id,))

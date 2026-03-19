@@ -140,6 +140,13 @@ def add_to_book_list(book_id):
 
     return redirect(url_for('book', book_id=book_id))
 
+@app.route('/remove_from_book_list/<int:book_id>', methods=['GET', 'POST'])
+def remove_from_book_list(book_id):
+    current_status = request.args.get('status', 'All')
+    g.storage.remove_from_book_list(session['user_id'], book_id)
+
+    return redirect(url_for('book_list', status=current_status))
+
 if __name__ == "__main__":
     if os.environ.get('FLASK_ENV') == 'production':
         app.run(debug=False)

@@ -16,6 +16,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>#</th>
                 <th><a href="{{ url_for('book_list', order_by='title', order_dir='desc' if request.args.get('order_dir')=='asc' else 'asc', status=status) }}">Title</a></th>
                 <th>Status</th>
@@ -26,6 +27,9 @@
         <tbody>
             {% for entry in user_book_list %}
             <tr>
+                <td>
+                    <a href="{{ url_for('remove_from_book_list', book_id=entry.book_id, status=status) }}" class="btn btn-sm"><i class="bi bi-trash"></i></a>
+                </td>
                 <td>{{ loop.index }}</td>
                 <td><a href="{{ url_for('book', book_id=entry.book_id) }}">{{ entry.title }}</a></td>
                 <td>{{ entry.status }}</td>
