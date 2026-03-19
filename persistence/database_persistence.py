@@ -56,7 +56,8 @@ class DatabasePersistence:
                                 user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                                 book_id INTEGER REFERENCES books(id) ON DELETE CASCADE,
                                 status TEXT NOT NULL CHECK (status in ('Completed', 'Reading', 'Plan to Read', 'Dropped')),
-                                score TEXT
+                                score TEXT,
+                                memo TEXT
                                 );
                             ''')
 
@@ -160,7 +161,7 @@ class DatabasePersistence:
 
     def user_book_status(self, user_id, book_id):
         query = '''
-                SELECT status, score FROM users_books
+                SELECT status, score, memo FROM users_books
                 WHERE user_id = (%s) and book_id = (%s);
                 '''
         logger.info('Executing query: %s', query)
@@ -170,7 +171,7 @@ class DatabasePersistence:
                 cursor.execute(query, (user_id, book_id,))
                 return cursor.fetchone()
 
-    def add_to_book_list(self, user_id, book_id, status, score):
+    def add_to_book_list(self, user_id, book_id, status, score, memo):
         query = '''
                 SELECT 1 FROM users_books
                 WHERE user_id = (%s) and book_id = (%s);
@@ -185,21 +186,59 @@ class DatabasePersistence:
         if exists:
             query = '''
                     UPDATE users_books
-                    SET status = %s, score = %s
+                    SET status = %s, score = %s, memo = %s
                     WHERE user_id = %s AND book_id = %s;
                     '''
             logger.info('Executing query: %s', query)
 
             with self._database_connect() as connection:
                 with connection.cursor(cursor_factory=DictCursor) as cursor:
-                    cursor.execute(query, (status, score, user_id, book_id,))
+                    cursor.execute(query, (status, score, memo, user_id, book_id,))
         else:
             query = '''
-                    INSERT INTO users_books (user_id, book_id, status, score)
-                    values (%s, %s, %s, %s);
+                    INSERT INTO users_books (user_id, book_id, status, score, memo)
+                    values (%s, %s, %s, %s, %s);
                     '''
             logger.info('Executing query: %s', query)
 
             with self._database_connect() as connection:
                 with connection.cursor(cursor_factory=DictCursor) as cursor:
-                    cursor.execute(query, (user_id, book_id, status, score,))
+                    cursor.execute(query, (user_id, book_id, status, score, memo,))
+
+    def get_user_book_list(self, user_id, order_by, order_dir, status):
+        allowed_columns = ('title', 'score')
+        allowed_orders = ('asc', 'desc')
+
+        if order_by not in allowed_columns:
+            order_by = 'title'
+
+        if order_dir not in allowed_orders:
+            order_dir = 'desc'
+
+        query = f'''
+                SELECT * FROM books as b
+                JOIN users_books as ub
+                ON b.id = ub.book_id
+                '''
+        where_clauses = ['user_id = %s']
+        params = [user_id]
+
+        if status != 'All':
+            where_clauses.append('status = (%s)')
+            params.append(status)
+
+        query += ' WHERE ' + ' AND '.join(where_clauses)
+
+        if order_by == 'score':
+            query += f' ORDER BY {order_by} {order_dir}, title'
+        else:
+            query += f' ORDER BY {order_by} {order_dir}'
+
+        logger.info('Executing query: %s', query)
+
+        with self._database_connect() as connection:
+            with connection.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, tuple(params))
+                result = cursor.fetchall()
+
+        return result

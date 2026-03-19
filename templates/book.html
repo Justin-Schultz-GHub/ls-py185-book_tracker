@@ -17,12 +17,14 @@
             <option value="Plan to Read" {% if user_book and user_book.status == 'Plan to Read' %}selected{% endif %}>Plan to Read</option>
             <option value="Completed" {% if user_book and user_book.status == 'Completed' %}selected{% endif %}>Completed</option>
             <option value="Dropped" {% if user_book and user_book.status == 'Dropped' %}selected{% endif %}>Dropped</option>
+            <option value="On Hold" {% if user_book and user_book.status == 'On Hold' %}selected{% endif %}>On Hold</option>
         </select>
     </div>
 
     <div class="mb-2" style="width: 200px;">
         <label for="score" class="form-label">Score</label>
         <select name="score" id="score" class="form-select">
+            <option value="Select" {% if user_book and user_book.score == 'Select' %}selected{% endif %}>Select</option>
             <option value="10" {% if user_book and user_book.score|int == 10 %}selected{% endif %}>10 - Masterpiece</option>
             <option value="9" {% if user_book and user_book.score|int == 9 %}selected{% endif %}>9 - Great</option>
             <option value="8" {% if user_book and user_book.score|int == 8 %}selected{% endif %}>8 - Very Good</option>
@@ -36,6 +38,10 @@
         </select>
     </div>
 
+    <div class="mb-2">
+        <label for="memo" class="form-label">Memo</label>
+        <textarea name="memo" id="memo" class="form-control" rows="3" style="width: 300px;">{{ user_book.memo if user_book else '' }}</textarea>
+    </div>
 
     {% if user_book.status %}
         <button type="submit" class="btn btn-warning">Update</button>

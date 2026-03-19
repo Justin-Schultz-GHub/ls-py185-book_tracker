@@ -107,15 +107,37 @@ def book(book_id):
     return render_template('book.html', book=book, user_book=user_book)
 
 @app.route('/book_list')
-def book_list():
-    return render_template('book_list.html')
+def book_list(status='All'):
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+
+    order_by = request.args.get('order_by', 'title').lower()
+    order_dir = request.args.get('order_dir', 'desc').lower()
+    status = request.args.get('status', 'All')
+
+    allowed_columns = ('title', 'score')
+    if order_by not in allowed_columns:
+        order_by = 'title'
+
+    allowed_orders = ('asc', 'desc')
+    if order_dir not in allowed_orders:
+        order_dir = 'desc'
+
+    allowed_statuses = ('All', 'Reading', 'Plan to Read', 'Completed', 'Dropped', 'On Hold')
+    if status not in allowed_statuses:
+        status = 'All'
+
+    user_book_list = g.storage.get_user_book_list(session['user_id'], order_by, order_dir, status)
+
+    return render_template('book_list.html', user_book_list=user_book_list, status=status)
 
 @app.route('/add_to_book_list/<int:book_id>', methods=['GET', 'POST'])
 def add_to_book_list(book_id):
     status = request.form['status']
     score = str(request.form['score'])
+    memo = request.form['memo']
 
-    g.storage.add_to_book_list(session['user_id'], book_id, status, score)
+    g.storage.add_to_book_list(session['user_id'], book_id, status, score, memo)
 
     return redirect(url_for('book', book_id=book_id))
 
