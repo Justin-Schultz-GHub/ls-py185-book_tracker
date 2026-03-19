@@ -2,6 +2,12 @@
 
 {% block page_title %}BOOKS{% endblock %}
 {% block content %}
+<div class="d-flex justify-content-center mb-4">
+    <form class="d-flex" method="GET" action="{{ url_for('books') }}">
+        <input class="form-control me-2" type="search" name="q" placeholder="Search by title or genre" value="{{ request.args.get('q', '') }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+</div>
 <div class="container mt-4">
     <div class="row mx-auto" style="width: 80%; justify-content: center;">
         {% for book in books %}

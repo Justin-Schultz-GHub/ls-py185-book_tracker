@@ -87,20 +87,30 @@ class DatabasePersistence:
 
         return result
 
-    def get_all_books(self):
-        query = '''
-                SELECT b.id, b.title, array_agg(g.name) AS genres
-                FROM books b
-                JOIN books_genres bg ON b.id = bg.book_id
-                JOIN genres g ON bg.genre_id = g.id
-                GROUP BY b.id, b.title
-                ORDER BY b.title;
-                '''
-        logger.info('Executing query: %s', query)
+    def get_books(self, search_terms):
+        search_list = search_terms.split()
+
+        base_query = '''
+            SELECT DISTINCT b.id, b.title, array_agg(g.name) AS genres
+            FROM books b
+            JOIN books_genres bg ON b.id = bg.book_id
+            JOIN genres g ON bg.genre_id = g.id
+        '''
+
+        params = []
+        if search_list:
+            conditions = []
+            for term in search_list:
+                conditions.append("(b.title ILIKE %s OR g.name ILIKE %s)")
+                params.extend([f"%{term}%", f"%{term}%"])
+            where_clause = " WHERE " + " AND ".join(conditions)
+            base_query += where_clause
+
+        base_query += " GROUP BY b.id, b.title ORDER BY b.title;"
 
         with self._database_connect() as connection:
             with connection.cursor(cursor_factory=DictCursor) as cursor:
-                cursor.execute(query)
+                cursor.execute(base_query, params)
                 result = cursor.fetchall()
 
         return result

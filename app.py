@@ -90,9 +90,11 @@ def logout():
 def home():
     return render_template('home.html')
 
-@app.route('/books')
+@app.route('/books', methods=['GET'])
 def books():
-    books = g.storage.get_all_books()
+    search_query = request.args.get('q', '').strip()
+    print(search_query)
+    books = g.storage.get_books(search_query)
     return render_template('books.html', books=books)
 
 @app.route('/book/<int:book_id>')
