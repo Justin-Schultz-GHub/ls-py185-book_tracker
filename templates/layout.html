@@ -8,6 +8,13 @@
             <a href="{{ url_for('index') }}" class="fs-4 text-decoration-none">Justin's Book Tracker App</a>
             {% if session.user_id %}
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Log out</a>
+            {% else %}
+                {% if request.endpoint != 'index' %}
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Log in</a>
+                    <a href="{{ url_for('signup') }}" class="btn btn-success btn-lg">Sign up</a>
+                </div>
+                {% endif %}
             {% endif %}
         </header>
         {% with messages = get_flashed_messages(with_categories=true) %}

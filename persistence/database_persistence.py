@@ -14,52 +14,12 @@ class DatabasePersistence:
         self._setup_schema()
 
     def _setup_schema(self):
+        with open('schema.sql', 'r') as f:
+            sql = f.read()
+
         with self._database_connect() as connection:
             with connection.cursor() as cursor:
-                cursor.execute('''
-                                CREATE TABLE IF NOT EXISTS books (
-                                id SERIAL PRIMARY KEY,
-                                title TEXT UNIQUE NOT NULL,
-                                author TEXT NOT NULL,
-                                synopsis TEXT
-                                );
-                            ''')
-
-                cursor.execute('''
-                                CREATE TABLE IF NOT EXISTS genres (
-                                id SERIAL PRIMARY KEY,
-                                name text UNIQUE NOT NULL
-                                );
-                            ''')
-
-                cursor.execute('''
-                                CREATE TABLE IF NOT EXISTS books_genres (
-                                book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-                                genre_id INTEGER NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
-                                PRIMARY KEY (book_id, genre_id)
-                                );
-                            ''')
-                cursor.execute('''
-                                CREATE INDEX IF NOT EXISTS idx_books_genres_genre_id
-                                ON books_genres (genre_id);
-                            ''')
-                cursor.execute('''
-                                CREATE TABLE IF NOT EXISTS users (
-                                id SERIAL PRIMARY KEY,
-                                username VARCHAR(20) UNIQUE,
-                                password_hash TEXT NOT NULL
-                                );
-                            ''')
-                cursor.execute('''
-                                CREATE TABLE IF NOT EXISTS users_books (
-                                id SERIAL PRIMARY KEY,
-                                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-                                book_id INTEGER REFERENCES books(id) ON DELETE CASCADE,
-                                status TEXT NOT NULL CHECK (status in ('Completed', 'Reading', 'Plan to Read', 'Dropped')),
-                                score TEXT,
-                                memo TEXT
-                                );
-                            ''')
+                cursor.execute(sql)
 
     @contextmanager
     def _database_connect(self):
