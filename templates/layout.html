@@ -20,7 +20,7 @@
             {% endif %}
         {% endwith %}
         <main>
-            <div class="d-flex gap-3">
+            <div class="d-flex justify-content-center gap-3 mt-4 mb-3">
                 <a href="{{ url_for('books') }}" class="btn btn-primary">Books</a>
                 {% if session.user_id %}
                 <a href="{{ url_for('book_list') }}" class="btn btn-secondary">Book List</a>

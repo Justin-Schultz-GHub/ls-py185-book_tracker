@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-center gap-2 mb-3">
-    {% set statuses = ['all', 'Reading', 'Completed', 'Plan to Read', 'Dropped', 'On Hold'] %}
+    {% set statuses = ['All', 'Reading', 'Completed', 'Plan to Read', 'Dropped', 'On Hold'] %}
     {% for s in statuses %}
         <a href="{{ url_for('book_list', status=s, order_by=request.args.get('order_by', 'title'), order_dir=request.args.get('order_dir', 'desc')) }}"
            class="btn {% if status == s %}btn-primary{% else %}btn-outline-primary{% endif %}">
@@ -29,7 +29,7 @@
                 <td>{{ loop.index }}</td>
                 <td><a href="{{ url_for('book', book_id=entry.book_id) }}">{{ entry.title }}</a></td>
                 <td>{{ entry.status }}</td>
-                <td>{{ '' if entry.score == 'Select' else entry.score }}</td>
+                <td class="text-center">{{ '' if entry.score == 'Select' else entry.score }}</td>
                 <td style="max-width: 300px; white-space: normal; word-wrap: break-word;">{{ entry.memo if entry.memo else '' }}</td>
             </tr>
             {% endfor %}
