@@ -12,29 +12,29 @@
         </a>
     {% endfor %}
 </div>
-<div class="mx-auto mt-4" style="width: 75%;">
+<div class="mx-auto mt-4" style="width: 45%; min-width: 550px;">
     <table class="table">
         <thead>
             <tr>
-                <th></th>
-                <th>#</th>
-                <th><a href="{{ url_for('book_list', order_by='title', order_dir='desc' if request.args.get('order_dir')=='asc' else 'asc', status=status) }}">Title</a></th>
-                <th>Status</th>
-                <th><a href="{{ url_for('book_list', order_by='score', order_dir='desc' if request.args.get('order_dir')=='asc' else 'asc', status=status) }}">Score</a></th>
-                <th>Memo</th>
+                <th style="width: 5%;" class="text-center"></th>
+                <th style="width: 2%;" class="text-center">#</th>
+                <th style="width: 50%;"><a href="{{ url_for('book_list', order_by='title', order_dir='desc' if request.args.get('order_dir')=='asc' else 'asc', status=status) }}">Title</a></th>
+                <th style="width: 15%;" class="text-center">Status</th>
+                <th style="width: 5%;" class="text-center"><a href="{{ url_for('book_list', order_by='score', order_dir='desc' if request.args.get('order_dir')=='asc' else 'asc', status=status) }}">Score</a></th>
+                <th style="width: 23%;" class="text-center">Memo</th>
             </tr>
         </thead>
         <tbody>
             {% for entry in user_book_list %}
             <tr>
-                <td>
+                <td class="text-center">
                     <a href="{{ url_for('remove_from_book_list', book_id=entry.book_id, status=status) }}" class="btn btn-sm"><i class="bi bi-trash"></i></a>
                 </td>
-                <td>{{ loop.index }}</td>
+                <td class="text-center">{{ loop.index }}</td>
                 <td><a href="{{ url_for('book', book_id=entry.book_id) }}">{{ entry.title }}</a></td>
-                <td>{{ entry.status }}</td>
+                <td class="text-center">{{ entry.status }}</td>
                 <td class="text-center">{{ '' if entry.score == 'Select' else entry.score }}</td>
-                <td style="max-width: 300px; white-space: normal; word-wrap: break-word;">{{ entry.memo if entry.memo else '' }}</td>
+                <td style="max-width: 300px; white-space: normal; word-wrap: break-word;" class="text-center">{{ entry.memo if entry.memo else '' }}</td>
             </tr>
             {% endfor %}
         </tbody>
